@@ -10,7 +10,7 @@ class QtConan(ConanFile):
 	version = "2.6"
 	description = "Qt is a cross-platform framework for graphical user interfaces."
 	topics = ("conan", "qt", "ui")
-	url = "https://github.com/bincrafters/conan-qt"
+	url = "https://github.com/insaneFactory/conan-qtsingleapplication"
 	homepage = "https://github.com/qtproject/qt-solutions"
 	license = "LGPL-3.0"
 	generators = "qmake"
