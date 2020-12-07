@@ -27,6 +27,7 @@ class QtConan(ConanFile):
 	def build(self):
 		# PRO file
 		proconfig = [
+			"CONFIG += %s\n" % ("debug" if self.settings.build_type == "Debug" else "release"),
 			"CONFIG += conan_basic_setup\n",
 			"include(../../conanbuildinfo.pri)\n"
 		]
@@ -43,20 +44,20 @@ class QtConan(ConanFile):
 				f.write("SOLUTIONS_LIBRARY = yes")
 		
 		# Build
+		qmakecmd = os.path.join(self.deps_cpp_info["qt"].bin_paths[0], "qmake")
 		if self.settings.compiler == "Visual Studio":
 			env_build = VisualStudioBuildEnvironment(self)
 			with tools.environment_append(env_build.vars):
 				vcvars = tools.vcvars_command(self.settings)
-				qmakecmd = os.path.join(self.deps_cpp_info["qt"].bin_paths[0], "qmake")
 				self.run("%s && %s %s" % (vcvars, str(qmakecmd), self._source_subfolder))
 				self.run("%s && nmake" % vcvars)
-				self.run("%s && nmake install" % vcvars)
+				#self.run("%s && nmake install" % vcvars)
 		else:
 			env_build = RunEnvironment(self)
 			with tools.environment_append(env_build.vars):
-				self.run("qmake")
+				self.run("%s %s" % (str(qmakecmd), self._source_subfolder))
 				self.run("make")
-				self.run("make install")
+				#self.run("make install")
 
 	def package(self):
 		srcpath = os.path.join(self._source_subfolder, "src")
@@ -68,5 +69,5 @@ class QtConan(ConanFile):
 		self.copy("*.h", dst=os.path.join("include", self.name), src=srcpath)
 		
 	def package_info(self):
-		self.cpp_info.libs = ["Qt5Solutions_SingleApplication-headd" if self.settings.build_type == "Debug" else "Qt5Solutions_SingleApplication-head"]
+		self.cpp_info.libs = ["Qt5Solutions_SingleApplication-headd" if self.settings.compiler == "Visual Studio" and self.settings.build_type == "Debug" else "Qt5Solutions_SingleApplication-head"]
 		self.cpp_info.defines = ["QT_QTSINGLEAPPLICATION_IMPORT"] if self.options.shared else []
