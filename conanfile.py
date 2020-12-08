@@ -65,7 +65,7 @@ class QtConan(ConanFile):
 		self.copy("*.dll", dst="bin", src=libpath)
 		self.copy("*.lib", dst="lib", src=libpath)
 		self.copy("*.pdb", dst="lib", src=libpath)
-		self.copy("*.so", dst="lib", src=libpath)
+		self.copy("*.so*", dst="lib", src=libpath)
 		self.copy("*.h", dst=os.path.join("include", self.name), src=srcpath)
 		
 	def package_info(self):
